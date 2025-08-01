@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiFluentTreeView.Views.TreeViewNodeControl"
+             xmlns:mi="http://www.aathifmahir.com/dotnet/2022/maui/icons"
+             xmlns:Models="clr-namespace:MauiFluentTreeView.Models"
+             xmlns:Views="clr-namespace:MauiFluentTreeView.Views"
+             xmlns:Converters="clr-namespace:MauiFluentTreeView.Converters"
+             x:DataType="Models:TreeNode">
+    <ContentView.Resources>
+        <Converters:ExpandIconConverter x:Key="ExpandIconConverter" />
+        <Converters:NullToBoolConverter x:Key="NullToBoolConverter" />
+        <Converters:DepthToPaddingConverter x:Key="DepthToPaddingConverter" />
+        <Converters:ExpandRotationConverter x:Key="ExpandRotationConverter" />
+        <Converters:LeafToVisibilityConverter x:Key="LeafToVisibilityConverter" />
+        <Converters:NullToDoubleConverter x:Key="IconSizeConverter" NullOrEmptyValue="0" NonEmptyValue="40" />
+        <Converters:SelectionModeToBoolConverter x:Key="SelectionModeToBoolConverter" />
+        <Converters:BoolToHighlightBackgroundConverter  x:Key="BoolToHighlightBackgroundConverter" />
+        <Converters:BoolToStripColorConverter  x:Key="StripColorConverter" />
+
+    </ContentView.Resources>
+    <VerticalStackLayout Padding="{Binding Depth, Converter={StaticResource DepthToPaddingConverter}}">
+
+        <Border HeightRequest="30"
+                StrokeThickness="0"
+                BackgroundColor="{Binding ShouldHighlight, Converter={StaticResource BoolToHighlightBackgroundConverter}}"
+                Padding="4"
+                Opacity="80"
+                Margin="2"
+                StrokeShape="RoundRectangle 8"
+                Stroke="{Binding IsSelected, Converter={StaticResource BoolToHighlightBackgroundConverter}}">
+            <HorizontalStackLayout Spacing="3">
+                <HorizontalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ToggleSelectCommand}" />
+                </HorizontalStackLayout.GestureRecognizers>
+                <Border BackgroundColor="{Binding IsSelected, Converter={StaticResource StripColorConverter}}"
+                        HeightRequest="20"
+                        StrokeThickness="0"
+                        WidthRequest="5"
+                        StrokeShape="RoundRectangle 4" />
+                <Border HeightRequest="20"
+                        WidthRequest="20"
+                        Padding="0"
+                        Stroke="White"
+                        StrokeThickness="1"
+                        StrokeShape="RoundRectangle 5"
+                        IsVisible="{Binding SelectionMode, Converter={StaticResource SelectionModeToBoolConverter}}">
+                    <Border.Triggers>
+                        <DataTrigger TargetType="Border"
+                                     Binding="{Binding IsSelected}"
+                                     Value="True">
+                            <Setter Property="Background"
+                                    Value="White" />
+                        </DataTrigger>
+                    </Border.Triggers>
+                    <Label Text="&#x2713;"
+                           FontSize="14"
+                           TextColor="Black"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           IsVisible="{Binding IsSelected}" />
+                </Border>
+                <HorizontalStackLayout IsVisible="{Binding IsActive}"
+                                       VerticalOptions="Fill">
+                    <HorizontalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ToggleExpandCommand}" />
+                    </HorizontalStackLayout.GestureRecognizers>
+
+                    <!--<CheckBox x:Name="checkBox"
+                              IsChecked="{Binding IsSelected}"
+                              IsVisible="{Binding SelectionMode, Converter={StaticResource SelectionModeToBoolConverter}}"
+                              Margin="0"
+                              FlowDirection="RightToLeft"
+                              HorizontalOptions="Center"
+                              VerticalOptions="Center" />-->
+
+                    <!-- Expand/Collapse Icon -->
+                    <Image Aspect="AspectFit"
+                           HeightRequest="20"
+                           WidthRequest="20"
+                           mi:MauiIcon.Value="{mi:Material Icon=ArrowRight}"
+                           Rotation="{Binding IsExpanded, Converter={StaticResource ExpandRotationConverter}}"
+                           IsVisible="{Binding IsLeaf, Converter={StaticResource LeafToVisibilityConverter}}" />
+                    <!-- Optional Icon -->
+                    <Image Source="{Binding Icon}"
+                           WidthRequest="{Binding Icon, Converter={StaticResource IconSizeConverter}}"
+                           HeightRequest="{Binding Icon, Converter={StaticResource IconSizeConverter}}"
+                           Aspect="AspectFit"
+                           IsVisible="{Binding Icon, Converter={StaticResource NullToBoolConverter}}"
+                           Margin="2" 
+                           />
+                    <!-- Node Title -->
+                    <Label Grid.Column="2"
+                           Text="{Binding Title}"
+                           VerticalOptions="Center"
+                           FontSize="16" />
+                </HorizontalStackLayout>
+
+            </HorizontalStackLayout>
+        </Border>
+        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Children}"
+                             IsVisible="{Binding IsExpanded}">
+            <BindableLayout.ItemTemplate>
+                <DataTemplate>
+                    <Views:TreeViewNodeControl />
+                </DataTemplate>
+            </BindableLayout.ItemTemplate>
+        </VerticalStackLayout>
+
+    </VerticalStackLayout>
+</ContentView>

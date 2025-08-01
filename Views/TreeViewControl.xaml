@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiFluentTreeView.Views.TreeViewControl"
+             x:Name="this"
+             xmlns:Views="clr-namespace:MauiFluentTreeView.Views">
+   
+    <VerticalStackLayout 
+        BindableLayout.ItemsSource="{Binding Source={x:Reference this}, Path=HierarchicalDataSource}">
+        <BindableLayout.ItemTemplate>
+            <DataTemplate>
+                <Views:TreeViewNodeControl BindingContext="{Binding .}" />
+            </DataTemplate>
+        </BindableLayout.ItemTemplate>
+    </VerticalStackLayout>
+</ContentView>
